@@ -1,2 +1,6 @@
 # HERMESPEED_APP
-App de la tienda online de zapatos HermesSpeed
+## Integrantes
+1.Víctor Mariano Callejas Calderón
+2.Francisco Eduardo Peña Márquez
+3.Kenneth Iván Ramos Majano
+
