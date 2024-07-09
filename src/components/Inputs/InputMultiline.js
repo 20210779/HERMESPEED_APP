@@ -9,7 +9,7 @@ export default function InputMultiline({
 }) {
   return (
     <View style={styles.container}>
-      <Icon name="lock" size={35} color="#ACACAD" style={styles.icon} />
+      <Icon name="address-card-o" size={30} color="#ACACAD" style={styles.icon} />
       <TextInput
         style={styles.input}
         placeholder={placeHolder}
@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
     borderColor: "#FFBE00",
     padding: 5,
     width:'80%',
+    paddingStart: 5,
     marginTop: 10,
     borderRadius: 4,
   },

@@ -9,9 +9,10 @@ import {
 } from "react-native";
 import { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { MaterialIcons } from '@expo/vector-icons';
 import * as Constantes from "../utils/constantes";
 import Constants from "expo-constants";
-//Import de componentes
+// Import de componentes
 import Input from "../components/Inputs/Input";
 import InputMultiline from "../components/Inputs/InputMultiline";
 import Buttons from "../components/Buttons/Button";
@@ -41,17 +42,13 @@ export default function SignUp({ navigation }) {
   const duiRegex = /^\d{8}-\d$/;
   const telefonoRegex = /^\d{4}-\d{4}$/;
 
-  /*
-    Codigo para mostrar el datetimepicker
-    */
-
+  // Código para mostrar el datetimepicker
   const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
+    const currentDate = selectedDate || date;
     setShow(false);
     setDate(currentDate);
-    /*
-        Codigo para convertir la fecha al formato año-mes-dia */
 
+    // Código para convertir la fecha al formato año-mes-día
     const year = currentDate.getFullYear();
     const month = String(currentDate.getMonth() + 1).padStart(2, "0");
     const day = String(currentDate.getDate()).padStart(2, "0");
@@ -69,41 +66,13 @@ export default function SignUp({ navigation }) {
     showMode("date");
   };
 
-  /*
-        Fin Codigo para mostrar el datetimepicker
-        */
-
-  const handleLogout = async () => {
-    /*
-                try {
-                    const response = await fetch(`${ip}/coffeeshop/api/services/public/cliente.php?action=logOut`, {
-                        method: 'GET'
-                    });
-        
-                    const data = await response.json();
-        
-                    if (data.status) {
-                        navigation.navigate('Sesion');
-                    } else {
-                        console.log(data);
-                        // Alert the user about the error
-                        Alert.alert('Error', data.error);
-                    }
-                } catch (error) {
-                    console.error(error, "Error desde Catch");
-                    Alert.alert('Error', 'Ocurrió un error al iniciar sesión con bryancito');
-                } */
-    navigation.navigate("Sesion");
-  };
-
-  //props que recibe input
-  //placeHolder, setValor, contra, setTextChange
-
+  // Función para manejar la creación de la cuenta
   const handleCreate = async () => {
     try {
       // Calcular la fecha mínima permitida (18 años atrás desde la fecha actual)
       const fechaMinima = new Date();
       fechaMinima.setFullYear(fechaMinima.getFullYear() - 18);
+      
       // Validar los campos
       if (
         !nombre.trim() ||
@@ -161,6 +130,11 @@ export default function SignUp({ navigation }) {
     }
   };
 
+  // Función para manejar el logout
+  const handleLogout = async () => {
+    navigation.navigate("Sesion");
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewStyle}>
@@ -214,13 +188,12 @@ export default function SignUp({ navigation }) {
         />
         
         <View style={styles.contenedorFecha}>
-          <Text style={styles.fecha}>Fecha Nacimiento</Text>
-          
-
+          <MaterialIcons name="date-range" size={34} color="#ACACAD" style={styles.icon}/>
           <TouchableOpacity onPress={showDatepicker}>
-            <Text style={styles.fechaSeleccionar}>Seleccionar Fecha:</Text>
+            <Text style={styles.fecha}>
+              {fechaNacimiento ? fechaNacimiento : "../../../"}
+            </Text>
           </TouchableOpacity>
-          <Text style={styles.fecha}>Seleccion: {fechaNacimiento}</Text>
 
           {show && (
             <DateTimePicker
@@ -256,7 +229,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#1E1F21",
-    paddingTop: Constants.statusBarHeight + 5, // el 5 es para darle un pequeño margen cuando hay una camara en el centro de la pantalla
+    paddingTop: Constants.statusBarHeight + 5, // el 5 es para darle un pequeño margen cuando hay una cámara en el centro de la pantalla
   },
   scrollViewStyle: {
     alignItems: "center",
@@ -278,7 +251,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   titulo: {
-    marginTop: 60,
+    marginTop: 35,
     color: "#ffffff",
     fontWeight: "bold",
     fontSize: 35,
@@ -289,7 +262,8 @@ const styles = StyleSheet.create({
   },
   fecha: {
     fontWeight: "600",
-    color: "#FFF",
+    color: "#ACACAD",
+    marginLeft: 15,
   },
   textRegistrar: {
     color: "#ffffff",
@@ -307,12 +281,14 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   contenedorFecha: {
-    backgroundColor: "#A79277",
-    color: "#fff",
-    fontWeight: "800",
-    width: 250,
-    borderRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: '#FFBE00',
     padding: 5,
-    marginVertical: 5,
+    width: '80%',
+    marginTop: 20,
+    paddingStart: 5,
+    borderRadius: 4,
   },
 });
