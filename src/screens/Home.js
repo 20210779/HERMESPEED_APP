@@ -1,36 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  Alert,
-  TouchableOpacity,
-  ScrollView
-} from 'react-native';
+import {View,Text,StyleSheet,Image,Alert,TouchableOpacity,ScrollView} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Buttons from '../components/Buttons/Button';
 import * as Constantes from '../utils/constantes';
 
 export default function Home({ navigation }) {
-  const [nombre, setNombre] = useState(null);
+  const [correo, setCorreo] = useState(null);
   const ip = Constantes.IP;
-
-  const handleLogout = async () => {
-    try {
-      const response = await fetch(`${ip}/HERMESPEED/api/servicios/publico/cliente.php?action=logOut`, {
-        method: 'GET'
-      });
-      const data = await response.json();
-      if (data.status) {
-        navigation.navigate('Sesion');
-      } else {
-        Alert.alert('Error', data.error);
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Ocurrió un error al cerrar la sesión');
-    }
-  };
 
   const getUser = async () => {
     try {
@@ -39,26 +15,18 @@ export default function Home({ navigation }) {
       });
       const data = await response.json();
       if (data.status) {
-        setNombre(data.name.nombre_cliente);
+        setCorreo(data.username);
       } else {
         Alert.alert('Error', data.error);
       }
     } catch (error) {
-      Alert.alert('Error', 'No hay ningun nombre para mostrar');
+      Alert.alert('Error', 'No hay ningun correo para mostrar');
     }
   };
 
   useEffect(() => {
     getUser();
   }, []);
-
-  const irActualizar = () => {
-    navigation.navigate('Productos');
-  };
-
-  const EditUser = () => {
-    navigation.navigate('UpdateUser');
-  };
 
   return (
     <View style={styles.container}>
@@ -76,9 +44,9 @@ export default function Home({ navigation }) {
           </View>
         </View>
         <Text style={styles.Text}>Bienvenid@</Text>
-      <Text style={styles.subtitle}>
+      <Text style={styles.Text}>
         { /*correo ? correo : 'No hay correo para mostrar'*/}
-        {nombre ? nombre : 'No hay Nombre para mostrar'}
+        {correo ? correo : 'No hay Nombre para mostrar'}
       </Text>
 
         {/* Navigation Tabs */}
@@ -135,6 +103,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1E1F21',
   },
+  Text:{
+    color: '#ffffff',
+  },
   scrollViewStyle: {
     alignItems: 'center',
   },
@@ -170,6 +141,7 @@ const styles = StyleSheet.create({
   },
   bannerButtonText: {
     color: '#FFBE00',
+    
     fontWeight: 'bold',
   },
   tabs: {

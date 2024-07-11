@@ -1,11 +1,17 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image,Alert, TouchableOpacity, ScrollView } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { useState, useEffect } from 'react';
 import Buttons from '../components/Buttons/Button';
 import * as Constantes from '../utils/constantes';
+import Constants from 'expo-constants';
 
-export default function Profile(navigation) {
+export default function Profile({navigation}) {
   const ip = Constantes.IP;
+  const [correo, setCorreo] = useState(null);
+  const [nombre, setNombre] = useState(null);
+  const [dataUsuario, setDataUsuario] = useState("");
+  const [selectedValue, setSelectedValue] = useState(null);
 
   const handleLogout = async () => {
     try {
@@ -23,6 +29,35 @@ export default function Profile(navigation) {
     }
   };
 
+  const getUser = async () => {
+    try {
+      const response = await fetch(`${ip}/HERMESPEED/api/servicios/publico/cliente.php?action=readProfile`, {
+        method: 'GET'
+      });
+      const data = await response.json();
+      if (data.status) {
+        setDataUsuario(data.dataset)
+      } else {
+        console.log(data);
+        // Alert the user about the error
+        Alert.alert('Error del usuario', data.error);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'No hay ningun correo para mostrar');
+    }
+  };
+
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
+
+  // Función para manejar el logout
+  const handleEditProfile = async () => {
+    navigation.navigate("editProfile");
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -36,9 +71,9 @@ export default function Profile(navigation) {
           source={{ uri: 'https://example.com/profile-image-url' }} // replace with your image URL
           style={styles.profileImage}
         />
-        <Text style={styles.name}>Jhonson King</Text>
-        <Text style={styles.email}>jhonking@gmail.com</Text>
-        <TouchableOpacity style={styles.editProfileButton}>
+        <Text style={styles.name}>{dataUsuario.nombre_cliente}</Text>
+        <Text style={styles.email}>{dataUsuario.correo_cliente}</Text>
+        <TouchableOpacity style={styles.editProfileButton} onPress={handleEditProfile}>
           <Text style={styles.editProfileButtonText}>Edit Profile</Text>
         </TouchableOpacity>
       </View>
@@ -47,6 +82,10 @@ export default function Profile(navigation) {
         <MenuItem icon="language" text="Lenguaje" />
         <MenuItem icon="location-pin" text="Ubicacion" />
         <MenuItem icon="history" text="Mirar historial" />
+        <Buttons
+        textoBoton='Cerrar Sesión'
+        accionBoton={handleLogout}
+      />
       </ScrollView>
       <Text style={styles.versionText}>App version 003</Text>
     </View>
