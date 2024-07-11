@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from "@expo/vector-icons";
 import * as Constantes from "../utils/constantes";
 import Constants from "expo-constants";
 // Import de componentes
@@ -20,6 +20,7 @@ import TwoInput from "../components/Inputs/TwoInput";
 import MaskedInputTelefono from "../components/Inputs/MaskedInputTelefono";
 import MaskedInputDui from "../components/Inputs/MaskedInputDui";
 import InputEmail from "../components/Inputs/InputEmail";
+import InputEdad from "../components/Inputs/InputEdad";
 
 export default function SignUp({ navigation }) {
   const ip = Constantes.IP;
@@ -37,6 +38,7 @@ export default function SignUp({ navigation }) {
   const [fechaNacimiento, setFechaNacimiento] = useState("");
   const [clave, setClave] = useState("");
   const [confirmarClave, setConfirmarClave] = useState("");
+  const [edad, setEdad] = useState("");
 
   // Expresiones regulares para validar DUI y teléfono
   const duiRegex = /^\d{8}-\d$/;
@@ -55,6 +57,15 @@ export default function SignUp({ navigation }) {
 
     const fechaNueva = `${year}-${month}-${day}`;
     setFechaNacimiento(fechaNueva);
+
+    // Calcular la edad
+    const today = new Date();
+    let age = today.getFullYear() - year;
+    const m = today.getMonth() - currentDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < currentDate.getDate())) {
+      age--;
+    }
+    setEdad(age);
   };
 
   const showMode = (currentMode) => {
@@ -72,7 +83,7 @@ export default function SignUp({ navigation }) {
       // Calcular la fecha mínima permitida (18 años atrás desde la fecha actual)
       const fechaMinima = new Date();
       fechaMinima.setFullYear(fechaMinima.getFullYear() - 18);
-      
+
       // Validar los campos
       if (
         !nombre.trim() ||
@@ -83,12 +94,19 @@ export default function SignUp({ navigation }) {
         !fechaNacimiento.trim() ||
         !telefono.trim() ||
         !clave.trim() ||
-        !confirmarClave.trim()
+        !confirmarClave.trim()||
+        !edad.trim()
       ) {
         Alert.alert("Debes llenar todos los campos");
         return;
       } else if (!duiRegex.test(dui)) {
         Alert.alert("El DUI debe tener el formato correcto (########-#)");
+        return;
+      } else if (edad < 18) {
+        Alert.alert("Error", "Debes tener al menos 18 años para registrarte.");
+        return;
+      } else if (isNaN(edad)) {
+        Alert.alert("Error", "La edad debe ser un número válido.");
         return;
       } else if (!telefonoRegex.test(telefono)) {
         Alert.alert("El teléfono debe tener el formato correcto (####-####)");
@@ -97,21 +115,24 @@ export default function SignUp({ navigation }) {
         Alert.alert("Error", "Debes tener al menos 18 años para registrarte.");
         return;
       }
+      
 
       // Si todos los campos son válidos, proceder con la creación del usuario
       const formData = new FormData();
       formData.append("nombreCliente", nombre);
       formData.append("apellidoCliente", apellido);
       formData.append("correoCliente", email);
-      formData.append("direccionCliente", direccion);
       formData.append("duiCliente", dui);
-      formData.append("nacimientoCliente", fechaNacimiento);
       formData.append("telefonoCliente", telefono);
+      formData.append("direccionCliente", direccion);
       formData.append("claveCliente", clave);
+      formData.append("edadCliente",edad);
+      formData.append("nacimientoCliente", fechaNacimiento);
       formData.append("confirmarClave", confirmarClave);
 
+
       const response = await fetch(
-        `${ip}/coffeeshop/api/services/public/cliente.php?action=signUpMovil`,
+        `${ip}/HERMESPEED/api/servicios/publico/cliente.php?action=signUpMovil`,
         {
           method: "POST",
           body: formData,
@@ -158,7 +179,7 @@ export default function SignUp({ navigation }) {
           setValor={confirmarClave}
           setTextChange={setConfirmarClave}
         />
-        
+
         <TwoInput
           leftIconName="user"
           leftPlaceholder="Nombre"
@@ -169,26 +190,25 @@ export default function SignUp({ navigation }) {
           rightValue={apellido}
           rightOnChangeText={setApellido}
         />
-        <TwoInput
-          leftIconName="phone"
-          leftPlaceholder="Teléfono"
-          leftValue={telefono}
-          leftOnChangeText={setTelefono}
-          rightIconName="id-card"
-          rightPlaceholder="DUI"
-          rightValue={dui}
-          rightOnChangeText={setDui}
-        />
-        
+        <View style={styles.row}>
+          <MaskedInputTelefono telefono={telefono} setTelefono={setTelefono} />
+          <MaskedInputDui dui={dui} setDui={setDui} />
+        </View>
+
         <InputMultiline
           placeHolder="Dirección Cliente"
           setValor={setDireccion}
           valor={direccion}
           setTextChange={setDireccion}
         />
-        
+
         <View style={styles.contenedorFecha}>
-          <MaterialIcons name="date-range" size={34} color="#ACACAD" style={styles.icon}/>
+          <MaterialIcons
+            name="date-range"
+            size={34}
+            color="#ACACAD"
+            style={styles.icon}
+          />
           <TouchableOpacity onPress={showDatepicker}>
             <Text style={styles.fecha}>
               {fechaNacimiento ? fechaNacimiento : "../../../"}
@@ -213,6 +233,7 @@ export default function SignUp({ navigation }) {
             />
           )}
         </View>
+        <InputEdad value={edad} onChangeText={setEdad} />
         <Buttons textoBoton="Registrarse" accionBoton={handleCreate} />
         <TouchableOpacity onPress={handleLogout}>
           <Text style={styles.textRegistrar}>
@@ -241,9 +262,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '40%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "40%",
   },
   textRegistrar: {
     color: "#322C2B",
@@ -281,12 +302,12 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   contenedorFecha: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1.5,
-    borderColor: '#FFBE00',
+    borderColor: "#FFBE00",
     padding: 5,
-    width: '80%',
+    width: "80%",
     marginTop: 20,
     paddingStart: 5,
     borderRadius: 4,

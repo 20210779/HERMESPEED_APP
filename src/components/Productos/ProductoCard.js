@@ -1,60 +1,62 @@
+import React from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
-import { StatusBar, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, FlatList, ScrollView, SafeAreaView, Image } from 'react-native';
-import { useState, useEffect } from 'react';
-import { FontAwesome } from '@expo/vector-icons'; // Importamos el ícono
-
-//recibimos por props la imagen del producto, nombre, precio y otras propiedades de productos para mostrarlas en el componente de 
-//productoCard
-
-
-export default function ProductoCard({ ip, imagenProducto, idProducto, nombreProducto, descripcionProducto
-  , precioProducto, existenciasProducto, accionBotonProducto
+export default function ProductoCard({
+  ip,
+  imagenProducto,
+  idProducto,
+  nombreProducto,
+  descripcionProducto,
+  precioProducto,
+  existenciasProducto,
+  accionBotonProducto,
+  accionBotonDetalleProducto,
 }) {
-
   return (
+    
 
     <View style={styles.card}>
+        {/* Favorite Icon */}  
+      <TouchableOpacity style={styles.favoriteIcon}>
+        <FontAwesome name="heart-o" size={24} color="#FFBE00" />
+      </TouchableOpacity>
+      <Text style={styles.textTitle}>{nombreProducto}</Text>
+      {/* Product Image */}
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: `${ip}/coffeeshop/api/images/productos/${imagenProducto}` }}
+          source={{ uri: `${ip}/HERMESPEED/api/images/productos/${imagenProducto}` }}
           style={styles.image}
-          resizeMode="contain" // Ajustar la imagen al contenedor
+          resizeMode="contain"
         />
       </View>
+
+      {/* Product Info */}
+      
+      <Text style={styles.textPrice}>${precioProducto}</Text>
       <Text style={styles.text}>{idProducto}</Text>
-      <Text style={styles.textTitle}>{nombreProducto}</Text>
-      <Text style={styles.text}>{descripcionProducto}</Text>
-      <Text style={styles.textTitle}>Precio: <Text style={styles.textDentro}>${precioProducto}</Text></Text>
-      <Text style={styles.textTitle}>Existencias: <Text style={styles.textDentro}>{existenciasProducto} {(existenciasProducto === 1) ? 'Unidad' : 'Unidades'}</Text></Text>
+      {/* Add to Cart Button */}
       <TouchableOpacity
         style={styles.cartButton}
-        onPress={accionBotonProducto}>
-        <FontAwesome name="plus-circle" size={24} color="white" />
-        <Text style={styles.cartButtonText}>Seleccionar Producto</Text>
-      </TouchableOpacity>
+        onPress={accionBotonProducto}
+      >
+        <FontAwesome name="plus" size={16} color="black"/>
+      </TouchableOpacity>            
     </View>
-
   );
 }
 
-
 const styles = StyleSheet.create({
-  containerFlat: {
-    flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#EAD8C0',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: StatusBar.currentHeight || 0,
+  text:{
+    alignSelf:'flex-end',
+    backgroundColor: '#ffffff',
+    color:'#ffffff',
   },
   card: {
     backgroundColor: '#ffffff',
     borderRadius: 8,
     padding: 16,
-    marginVertical: 1,
+    marginVertical: 8,
     marginHorizontal: 16,
     shadowColor: '#000',
     shadowOffset: {
@@ -64,66 +66,48 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    position: 'relative',
+    width: '90%',
   },
-  text: {
-    fontSize: 16,
-    marginBottom: 8,
+  favoriteIcon: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    zIndex: 1,
+  },
+  imageContainer: {
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  image: {
+    width: 150,
+    height: 100,
+    borderRadius: 8,
   },
   textTitle: {
     fontSize: 16,
-    marginBottom: 8, fontWeight: '700'
+    fontWeight: 'bold',
+    color: 'black',
+    marginBottom: 9,
+    textAlign: 'left',
   },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 8,
-    marginLeft: 8,
-  },
-  button: {
-    backgroundColor: '#AF8260',
-    borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#ffffff',
+  textPrice: {
     fontSize: 16,
-    fontWeight: '600'
-  },
-  image: {
-    width: '65%',
-    height: 150,
-    borderRadius: 8,
+    fontWeight: 'bold',
+    color: '#FFBE00',
     marginBottom: 12,
-  },
-  imageContainer: {
-    alignItems: 'center', // Centrar imagen horizontalmente
-  }, textDentro: {
-    fontWeight: '400'
+    textAlign: 'center',
   },
   cartButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#AF8260',
+    backgroundColor: '#FFBE00',
     borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    marginVertical: 10,
-  },
-  cartButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 10,
-    textAlign: 'center'
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
   },
 });

@@ -1,17 +1,19 @@
 
 import { StatusBar, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, FlatList, ScrollView, SafeAreaView, Image, Modal } from 'react-native';
 import { useState, useEffect } from 'react';
-import * as Constantes from '../utils/constantes'
+import * as Constantes from '../utils/constantes';
 import Buttons from '../components/Buttons/Button';
 import ProductoCard from '../components/Productos/ProductoCard';
 import ModalCompra from '../components/Modales/ModalCompra';
 import RNPickerSelect from 'react-native-picker-select';
 import Constants from 'expo-constants';
+import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons'; // Importamos el ícono
 
-export default function Productos({ navigation }) {
+export default function Producto({ navigation }) {
 
   const ip = Constantes.IP;
+  const [products, setProducts] = useState([]);
   const [dataProductos, setDataProductos] = useState([])
   const [dataCategorias, setDataCategorias] = useState([])
   const [selectedValue, setSelectedValue] = useState(null);
@@ -20,17 +22,17 @@ export default function Productos({ navigation }) {
   const [idProductoModal, setIdProductoModal] = useState('')
   const [nombreProductoModal, setNombreProductoModal] = useState('')
 
-  const volverInicio = async () => {
-
-    navigation.navigate('Home');
-
-  };
-
+  
   const handleCompra = (nombre, id) => {
     setModalVisible(true)
     setIdProductoModal(id)
     setNombreProductoModal(nombre)
   }
+
+
+  const handleDetalleProducto = (productId) => {
+    navigation.navigate('DetalleProducto', { productId });
+  };
 
   //getCategorias Funcion para consultar por medio de una peticion GET los datos de la tabla categoria que se encuentran en la base de datos
   const getProductos = async (idCategoriaSelect = 1) => {
@@ -42,11 +44,10 @@ export default function Productos({ navigation }) {
       const formData = new FormData();
       formData.append('idCategoria', idCategoriaSelect);
       //utilizar la direccion IP del servidor y no localhost
-      const response = await fetch(`${ip}/coffeeshop/api/services/public/producto.php?action=readProductosCategoria`, {
+      const response = await fetch(`${ip}/HERMESPEED/api/servicios/publico/producto.php?action=readProductosCategoria`, {
         method: 'POST',
         body: formData
       });
-
       const data = await response.json();
       console.log("data al obtener productos  \n", data)
       if (data.status) {
@@ -67,7 +68,7 @@ export default function Productos({ navigation }) {
     try {
 
       //utilizar la direccion IP del servidor y no localhost
-      const response = await fetch(`${ip}/coffeeshop/api/services/public/categoria.php?action=readAll`, {
+      const response = await fetch(`${ip}/HERMESPEED/api/servicios/publico/categoria.php?action=readAll`, {
         method: 'GET',
       });
 
@@ -87,7 +88,6 @@ export default function Productos({ navigation }) {
   const handleCategoriaChange = (itemValue, itemIndex) => {
     setSelectedCategoria(itemValue);
   };
-
   //Uso del React Hook UseEffect para que cada vez que se cargue la vista por primera vez
   //se ejecute la funcion getCategorias
   useEffect(() => {
@@ -95,18 +95,8 @@ export default function Productos({ navigation }) {
     getCategorias();
   }, []);
 
-  const irCarrito = () => {
-    navigation.navigate('Carrito')
-  }
-
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Catalogo de Productos</Text>
-      <Buttons
-        textoBoton='Volver a Home'
-        accionBoton={volverInicio}
-      />
       <ModalCompra
         visible={modalVisible}
         cerrarModal={setModalVisible}
@@ -115,7 +105,12 @@ export default function Productos({ navigation }) {
         cantidad={cantidad}
         setCantidad={setCantidad}
       />
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={20} color="black" />
+        <TextInput style={styles.searchInput} placeholder="Busqueda..." />
+      </View>
       <View>
+      
         <Text style={styles.subtitle}>
           Selecciona una categoria para filtar productos
         </Text>
@@ -133,29 +128,22 @@ export default function Productos({ navigation }) {
       </View>
       <SafeAreaView style={styles.containerFlat}>
         <FlatList
+
           data={dataProductos}
-          keyExtractor={(item) => item.id_producto}
-          renderItem={({ item }) => ( // Util izamos destructuración para obtener directamente el item
-            <ProductoCard ip={ip}
+          keyExtractor={(item) => item.id_producto.toString()}
+          renderItem={({ item }) => (
+            <ProductoCard ip={ip}  
               imagenProducto={item.imagen_producto}
               idProducto={item.id_producto}
               nombreProducto={item.nombre_producto}
               descripcionProducto={item.descripcion_producto}
               precioProducto={item.precio_producto}
               existenciasProducto={item.existencias_producto}
-              accionBotonProducto={() => handleCompra(item.nombre_producto, item.id_producto)}
+              accionBotonProducto={() => handleDetalleProducto(item.id_producto)}
             />
           )}
         />
       </SafeAreaView>
-
-      <TouchableOpacity
-        style={styles.cartButton}
-        onPress={irCarrito}>
-        <FontAwesome name="shopping-cart" size={24} color="white" />
-        <Text style={styles.cartButtonText}>Ir al carrito</Text>
-      </TouchableOpacity>
-
     </View>
   );
 }
@@ -164,13 +152,31 @@ const styles = StyleSheet.create({
   containerFlat: {
     flex: 1,
     paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#1E1F21',
   },
   container: {
     flex: 1,
-    backgroundColor: '#EAD8C0',
+    backgroundColor: '#1E1F21',
+  },
+  searchContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#FFC107',
+    borderRadius: 5,
+    marginTop:35,
+    margin: 10,
+    padding: 5,
+  },
+  searchInput: {
+    marginLeft: 10,
+    
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 10,
+    backgroundColor: 'black',
   },
   card: {
     backgroundColor: '#ffffff',

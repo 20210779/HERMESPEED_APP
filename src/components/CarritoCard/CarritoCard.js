@@ -53,7 +53,7 @@ const CarritoCard = ({item, cargarCategorias,
               onPress: async () => {
                 const formData = new FormData();
                 formData.append('idDetalle', idDetalle);
-                const response = await fetch(`${ip}/coffeeshop/api/services/public/pedido.php?action=deleteDetail`, {
+                const response = await fetch(`${ip}/HERMESPEED/api/servicios/publico/pedido.php?action=deleteDetail`, {
                   method: 'POST',
                   body: formData
                 });
@@ -91,7 +91,7 @@ const CarritoCard = ({item, cargarCategorias,
     </TouchableOpacity>
 
     <TouchableOpacity style={styles.deleteButton}
-    onLongPress={()=>handleDeleteDetalleCarrito(item.id_detalle)}
+    onPress={()=>handleDeleteDetalleCarrito(item.id_detalle)}
     >
       <Text style={styles.buttonText}>Eliminar del carrito</Text>
     </TouchableOpacity>

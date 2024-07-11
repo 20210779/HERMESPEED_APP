@@ -7,7 +7,7 @@ export default function MaskedInputTelefono({telefono, setTelefono}) {
             <TextInputMask
                 style={styles.Input}
                 placeholder="Teléfono"
-                placeholderTextColor="#fff"
+                placeholderTextColor="#ACACAD"
                 type={'custom'}
                 options={{
                     mask: '9999-9999' // Formato para el número de teléfono
@@ -20,15 +20,15 @@ export default function MaskedInputTelefono({telefono, setTelefono}) {
 
 const styles = StyleSheet.create({
     Input: {
-        flexDirection: 'row',
-        alignItems: 'center',
         borderWidth: 1.5,
         borderColor: '#FFBE00',
         padding: 5,
-        width: '80%',
-        marginTop: 45,
+        width: '50%',
+        marginTop: 30,
         paddingStart: 5,
         borderRadius: 4,
+        color: '#ffffff',
+        fontWeight: 'bold', 
     },
   
   });

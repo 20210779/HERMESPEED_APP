@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Alert, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Alert,
+  TouchableOpacity,
+  ScrollView
+} from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import Buttons from '../components/Buttons/Button';
 import * as Constantes from '../utils/constantes';
 
@@ -23,14 +32,6 @@ export default function Home({ navigation }) {
     }
   };
 
-  const irActualizar = () => {
-    navigation.navigate('Productos');
-  };
-
-  const EditUser = () => {
-    navigation.navigate('UpdateUser');
-  };
-
   const getUser = async () => {
     try {
       const response = await fetch(`${ip}/HERMESPEED/api/servicios/publico/cliente.php?action=getUser`, {
@@ -43,7 +44,7 @@ export default function Home({ navigation }) {
         Alert.alert('Error', data.error);
       }
     } catch (error) {
-      Alert.alert('Error', 'Ocurrió un error al cerrar la sesión');
+      Alert.alert('Error', 'No hay ningun nombre para mostrar');
     }
   };
 
@@ -51,30 +52,80 @@ export default function Home({ navigation }) {
     getUser();
   }, []);
 
+  const irActualizar = () => {
+    navigation.navigate('Productos');
+  };
+
+  const EditUser = () => {
+    navigation.navigate('UpdateUser');
+  };
+
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../../assets/coffee-cup-splash.png')}
-        style={styles.image}
-      />
-      <Text style={styles.title}>Bienvenid@</Text>
+      <ScrollView contentContainerStyle={styles.scrollViewStyle}>
+        {/* Banner */}
+        <View style={styles.banner}>
+          <Image
+            source={require('../../assets/banner-shoe.png')}
+            style={styles.bannerImage}
+          />
+          <View style={styles.bannerContent}>
+            <TouchableOpacity style={styles.bannerButton}>
+              <Text style={styles.bannerButtonText}>Comprar ahora</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <Text style={styles.Text}>Bienvenid@</Text>
       <Text style={styles.subtitle}>
         { /*correo ? correo : 'No hay correo para mostrar'*/}
         {nombre ? nombre : 'No hay Nombre para mostrar'}
       </Text>
-      <Buttons
-        textoBoton='Cerrar Sesión'
-        accionBoton={handleLogout}
-      />
 
-      <Buttons
-        textoBoton='Ver Productos'
-        accionBoton={irActualizar}
-      />
-      <Buttons
-        textoBoton='Editar Usuario'
-        accionBoton={EditUser}
-      />
+        {/* Navigation Tabs */}
+        <View style={styles.tabs}>
+          <TouchableOpacity style={styles.tab}>
+            <Text style={styles.tabText}>recientes</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.tab}>
+            <Text style={styles.tabText}>populares</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.tab}>
+            <Text style={styles.tabText}>más vendidos</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Products Grid */}
+        <View style={styles.productsGrid}>
+          <View style={styles.productCard}>
+            <Image
+              source={require('../../assets/product1.png')}
+              style={styles.productImage}
+            />
+            <Text style={styles.productName}>Puma max 97</Text>
+          </View>
+          <View style={styles.productCard}>
+            <Image
+              source={require('../../assets/product1.png')}
+              style={styles.productImage}
+            />
+            <Text style={styles.productName}>Gazelle Bold Shoes</Text>
+          </View>
+          <View style={styles.productCard}>
+            <Image
+              source={require('../../assets/product1.png')}
+              style={styles.productImage}
+            />
+            <Text style={styles.productName}>Samba OG Shoes</Text>
+          </View>
+          <View style={styles.productCard}>
+            <Image
+              source={require('../../assets/product1.png')}
+              style={styles.productImage}
+            />
+            <Text style={styles.productName}>Air Black Shoes</Text>
+          </View>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -82,38 +133,91 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#EAD8C0',
-    alignItems: 'center',
-    justifyContent: 'center'
+    backgroundColor: '#1E1F21',
   },
-  image: {
+  scrollViewStyle: {
+    alignItems: 'center',
+  },
+  banner: {
+    width: '90%',
+    height: 150,
+    backgroundColor: '#FFBE00',
+    borderRadius: 10,
+    marginTop: 20,
+    overflow: 'hidden',
+  },
+  bannerImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  bannerContent: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+  },
+  bannerText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  bannerButton: {
+    backgroundColor: '#1E1F21',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  bannerButtonText: {
+    color: '#FFBE00',
+    fontWeight: 'bold',
+  },
+  tabs: {
+    flexDirection: 'row',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  tab: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  tabText: {
+    color: '#FFBE00',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  productsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+  },
+  productCard: {
+    width: '45%',
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    marginBottom: 20,
+    padding: 10,
+    alignItems: 'center',
+  },
+  productImage: {
     width: 100,
     height: 100,
-    marginBottom: 10
+    resizeMode: 'cover',
   },
-  button: {
-    borderWidth: 2,
-    borderColor: "black",
-    width: 100,
-    borderRadius: 10,
-    backgroundColor: "darkblue"
-  },
-  buttonText: {
-    textAlign: 'center',
-    color: "white"
-  },
-  title: {
-    fontSize: 24,
+  productName: {
+    marginTop: 10,
+    color: '#1E1F21',
     fontWeight: 'bold',
     textAlign: 'center',
-    marginVertical: 5,
-    color: '#5C3D2E', // Brown color for the title
   },
-  subtitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    textAlign: 'center',
-    marginVertical: 5,
-    color: '#5C3D2E', // Brown color for the title
+  bottomNavigation: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#FFBE00',
+    paddingVertical: 10,
+  },
+  navItem: {
+    alignItems: 'center',
   },
 });
