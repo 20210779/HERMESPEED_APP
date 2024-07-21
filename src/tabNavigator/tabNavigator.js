@@ -9,7 +9,7 @@ import Productos from '../screens/Producto';
 import Home from '../screens/Home';
 import Carrito from '../screens/Carrito';
 import Profile from '../screens/Profile';
-import DetalleProducto from '../screens/DetalleProducto';
+import CarruselScreen from '../screens/CarruselScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -34,6 +34,9 @@ const TabNavigator = () => {
               } else if (route.name === 'Carrito') {
                 iconName = 'shoppingcart';
               }
+              else if (route.name === 'CarruselScreen') {
+                iconName = 'car';
+              }
               else if (route.name === 'Profile') {
                 iconName = 'user';
               }
@@ -55,6 +58,11 @@ const TabNavigator = () => {
         name="Carrito"
         component={Carrito}
         options={{ title: 'Carrito' }}
+      />
+      <Tab.Screen
+        name="CarruselScreen"
+        component={CarruselScreen}
+        options={{ title: 'CarruselScreen' }}
       />
       <Tab.Screen
         name="Profile"

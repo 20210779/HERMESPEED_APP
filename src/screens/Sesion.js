@@ -152,10 +152,6 @@ export default function Sesion({ navigation }) {
       <Text style={styles.textRegistrarA}> Crea una nueva cuenta</Text>
       </Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={irHome}><Text style={styles.textRegistrarA}>
-       Ir a Home
-      </Text>
-      </TouchableOpacity>
     </View>
     
   );

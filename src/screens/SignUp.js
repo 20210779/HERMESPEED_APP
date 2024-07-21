@@ -17,8 +17,8 @@ import Input from "../components/Inputs/Input";
 import InputMultiline from "../components/Inputs/InputMultiline";
 import Buttons from "../components/Buttons/Button";
 import TwoInput from "../components/Inputs/TwoInput";
-import MaskedInputTelefono from "../components/Inputs/MaskedInputTelefono";
-import MaskedInputDui from "../components/Inputs/MaskedInputDui";
+import MaskedInputTelefono from '../components/Inputs/MaskedInputTelefono';
+import MaskedInputDui from '../components/Inputs/MaskedInputDui';
 import InputEmail from "../components/Inputs/InputEmail";
 import InputEdad from "../components/Inputs/InputEdad";
 
@@ -192,7 +192,7 @@ export default function SignUp({ navigation }) {
         />
         <View style={styles.row}>
           <MaskedInputTelefono telefono={telefono} setTelefono={setTelefono} />
-          <MaskedInputDui dui={dui} setDui={setDui} />
+          <MaskedInputDui dui={dui} setDui={setDui} setEditable={true} />
         </View>
 
         <InputMultiline

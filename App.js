@@ -6,6 +6,7 @@ import SignUp from './src/screens/SignUp.js'; // Importa la pantalla de Registro
 
 import TabNavigator from './src/tabNavigator/tabNavigator.js'; // Importa el navegador de pestañas
 import Home from './src/screens/Home.js';
+import CarruselScreen from './src/screens/CarruselScreen.js';
 import DetalleProducto from './src/screens/DetalleProducto.js';
 import EditPersonalInfo from './src/screens/editrProfile.js';
 
@@ -24,6 +25,7 @@ export default function App() {
         <Stack.Screen name="SignUp" component={SignUp} /> 
         <Stack.Screen name="TabNavigator" component={TabNavigator} /> 
         <Stack.Screen name="Home" component={Home} /> 
+        <Stack.Screen name="CarruselScreen" component={CarruselScreen} /> 
         <Stack.Screen name="DetalleProducto" component={DetalleProducto} /> 
         <Stack.Screen name="editProfile" component={EditPersonalInfo}/>
       </Stack.Navigator>
