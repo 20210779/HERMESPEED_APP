@@ -14,9 +14,11 @@ import * as Constantes from "../utils/constantes";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import Carousel from 'react-native-reanimated-carousel';
 import { useFocusEffect } from "@react-navigation/native";
+import CardCarrusel from "../components/Carousel/CardCarrusel";
 
 export default function Home({ navigation }) {
   const [correo, setCorreo] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [nombre, setNombre] = useState(null);
   const ip = Constantes.IP;
 
@@ -76,27 +78,32 @@ export default function Home({ navigation }) {
         </View>
         {/* Banner */}
         <View style={styles.banner}>
-          <Image
-            source={require("../../assets/banner-shoe.png")}
-            style={styles.bannerImage}
-          />
-          <View style={styles.bannerContent}>
-            <TouchableOpacity style={styles.bannerButton}>
-              <Text style={styles.bannerButtonText}>Comprar ahora</Text>
-            </TouchableOpacity>
-          </View>
+          <CardCarrusel/>
+        </View>
+        {/* Navigation Tabs */}
+        <View style={styles.categoriesHeader}>
+          <Text style={styles.TittleCategoria}>Categorias</Text>
+          <TouchableOpacity onPress={() => {/* handle see all action */}}>
+            <Text style={styles.seeAllText}>Ver todo</Text>
+          </TouchableOpacity>
         </View>
         {/* Navigation Tabs */}
         <View style={styles.tabs}>
-          <TouchableOpacity style={styles.tab}>
-            <Text style={styles.tabText}>recientes</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tab}>
-            <Text style={styles.tabText}>populares</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tab}>
-            <Text style={styles.tabText}>más vendidos</Text>
-          </TouchableOpacity>
+          <ScrollView horizontal contentContainerStyle={styles.sizeSelector}>
+            {["All", "Nike", "Adidas", "Puma"].map((category) => (
+              <TouchableOpacity
+                key={category}
+                style={selectedCategory === category ? styles.activeTab : styles.tab}
+                onPress={() => setSelectedCategory(category)}
+              >
+                <Text
+                  style={selectedCategory === category ? styles.activeTabText : styles.tabText}
+                >
+                  {category}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
 
         {/* Products Grid */}
@@ -146,7 +153,6 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: "row",
     justifyContent: "flex-start",
-    alignItems: "center",
     alignItems: "flex-start",
     padding: 10,
   },
@@ -158,13 +164,45 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 30,
     width: "88%",
+  },
+  categoriesHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    
+    marginVertical: 15,
+    width: "92%",
+    alignSelf: 'center',
+  },
+  sizeSelector: {
+    flexDirection: "row",
+    
+    marginBottom: 10,
   },
   greeting: {
     color: "#ffffff",
     fontWeight: "bold",
     fontSize: 20,
+  },
+  TittleCategoria: {
+    color: "#ffffff",
+    fontWeight: "600",
+    fontSize: 20,
+  },
+  seeAllText: {
+    color: "#cccccc",
+    fontWeight: "600",
+    fontSize: 14,
+  },
+  categoriesHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginVertical: 15,
+    width: "92%",
+    alignSelf: 'center',
   },
   userName: {
     color: "#ffffff",
@@ -180,53 +218,48 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   banner: {
-    width: "90%",
-    height: 150,
-    backgroundColor: "#FFBE00",
-    borderRadius: 10,
-    marginTop: 20,
-    overflow: "hidden",
-  },
-  bannerImage: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
+    width: "92%",
+    height: "25%",
   },
   bannerContent: {
     position: "absolute",
     top: 20,
     left: 20,
   },
-  bannerText: {
-    color: "#ffffff",
-    fontWeight: "bold",
-    fontSize: 20,
-  },
-  bannerButton: {
-    backgroundColor: "#1E1F21",
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  bannerButtonText: {
-    color: "#FFBE00",
-
-    fontWeight: "bold",
-  },
   tabs: {
     flexDirection: "row",
-    marginTop: 20,
+    marginTop: 5,
+    marginLeft: 9,
+    marginRight: 12,
     marginBottom: 10,
   },
   tab: {
-    flex: 1,
-    alignItems: "center",
-    paddingVertical: 10,
+    paddingVertical: 7,
+    paddingHorizontal: 15,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 5,
+    marginHorizontal: 7,
   },
   tabText: {
-    color: "#FFBE00",
-    fontSize: 16,
+    color: "#1E1F21",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  productsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-around",
+  },
+  activeTab: {
+    paddingVertical: 7,
+    paddingHorizontal: 15,
+    backgroundColor: '#FFBE00',
+    borderRadius: 5,
+    marginHorizontal: 7,
+  },
+  activeTabText: {
+    color: "#ffffff",
+    fontSize: 14,
     fontWeight: "bold",
   },
   productsGrid: {

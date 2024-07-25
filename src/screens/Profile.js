@@ -78,7 +78,7 @@ export default function Profile({navigation}) {
         </TouchableOpacity>
       </View>
       <ScrollView style={styles.menuContainer}>
-        <MenuItem icon="heart" text="Mis favoritos" />    
+        <MenuItem icon="heart-broken" text="Mis favoritos" />    
         <MenuItem icon="language" text="Lenguaje" />
         <MenuItem icon="location-pin" text="Ubicacion" />
         <MenuItem icon="history" text="Mirar historial" />
