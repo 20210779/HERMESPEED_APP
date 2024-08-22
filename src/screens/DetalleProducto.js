@@ -11,10 +11,10 @@ import {
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as Constantes from "../utils/constantes";
-import Buttons from "../components/Buttons/Button";
 
 export default function DetalleProducto({ route, navigation }) {
   const { productId } = route.params;
+
   const [dataTallas, setDataTallas] = useState([]);
   const [dataColores, setDataColores] = useState([]);
   const [dataProducto, setDataProducto] = useState([]);
@@ -23,18 +23,21 @@ export default function DetalleProducto({ route, navigation }) {
   const [selectedSizeId, setSelectedSizeId] = useState(null);
   const [selectedColorId, setSelectedColorId] = useState(null);
   const [quantity, setQuantity] = useState("");
-  const [idTalla, setTalla] = useState(0);
-  const [idColor, setColor] = useState(0);
+  const [rating, setRating] = useState(0);  // Estado para la calificación
 
-  // IP del servidor
   const ip = Constantes.IP;
+
+  useEffect(() => {
+    getProductos();
+    getColores();
+    getTallas();
+  }, [productId]);
 
   const getProductos = async () => {
     try {
-      console.log("Iniciando la solicitud para el producto con ID:", productId);
       const formData = new FormData();
       formData.append("idProducto", productId);
-      // Utilizar la dirección IP del servidor y no localhost
+
       const response = await fetch(
         `${ip}/HERMESPEED/api/servicios/publico/producto.php?action=readOne`,
         {
@@ -42,25 +45,21 @@ export default function DetalleProducto({ route, navigation }) {
           body: formData,
         }
       );
-      console.log("Respuesta recibida:", response);
+
       const data = await response.json();
-      console.log("Datos recibidos al obtener producto:", data);
+
       if (data.status) {
-        console.log("Datos del producto obtenidos con éxito:", data.dataset);
         setDataProducto(data.dataset);
       } else {
-        console.log("Error en la respuesta del servidor:", data);
         Alert.alert("Error producto", data.error);
       }
     } catch (error) {
-      console.error("Error durante la solicitud:", error);
       Alert.alert("Error", "Ocurrió un error al mostrar el producto");
     }
   };
 
   const getColores = async () => {
     try {
-      //utilizar la direccion IP del servidor y no localhost
       const response = await fetch(
         `${ip}/HERMESPEED/api/servicios/publico/color.php?action=readAll`,
         {
@@ -72,8 +71,6 @@ export default function DetalleProducto({ route, navigation }) {
       if (data.status) {
         setDataColores(data.dataset);
       } else {
-        console.log(data);
-        // Alert the user about the error
         Alert.alert("Error colores", data.error);
       }
     } catch (error) {
@@ -83,7 +80,6 @@ export default function DetalleProducto({ route, navigation }) {
 
   const getTallas = async () => {
     try {
-      //utilizar la direccion IP del servidor y no localhost
       const response = await fetch(
         `${ip}/HERMESPEED/api/servicios/publico/talla.php?action=readAll`,
         {
@@ -95,8 +91,6 @@ export default function DetalleProducto({ route, navigation }) {
       if (data.status) {
         setDataTallas(data.dataset);
       } else {
-        console.log(data);
-        // Alert the user about the error
         Alert.alert("Error tallas", data.error);
       }
     } catch (error) {
@@ -112,33 +106,30 @@ export default function DetalleProducto({ route, navigation }) {
 
     try {
       const formData = new FormData();
-      formData.append('cantidadProducto', quantity);
-      formData.append('idProducto', productId);  
-      formData.append('colorZapato', selectedColorId);
-      formData.append('tallaZapato', selectedSizeId);
+      formData.append("cantidadProducto", quantity);
+      formData.append("idProducto", productId);
+      formData.append("colorZapato", selectedColorId);
+      formData.append("tallaZapato", selectedSizeId);
 
-      const response = await fetch(`${ip}/HERMESPEED/api/servicios/publico/pedido.php?action=createDetail`, {
-        method: 'POST',
-        body: formData
-      });
+      const response = await fetch(
+        `${ip}/HERMESPEED/api/servicios/publico/pedido.php?action=createDetail`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       const data = await response.json();
       if (data.status) {
-        Alert.alert('Datos Guardados correctamente');
+        Alert.alert("Datos Guardados correctamente");
         navigation.goBack();
       } else {
-        Alert.alert('Error', data.error);
+        Alert.alert("Error", data.error);
       }
     } catch (error) {
-      Alert.alert('Ocurrió un error al crear detalle');
+      Alert.alert("Ocurrió un error al crear detalle");
     }
   };
-
-  useEffect(() => {
-    getProductos();
-    getColores();
-    getTallas();
-  }, [productId]);
 
   const handleQuantityChange = (text) => {
     if (/^\d*$/.test(text)) {
@@ -146,105 +137,132 @@ export default function DetalleProducto({ route, navigation }) {
     }
   };
 
+  // Componente de calificación por estrellas
+  const StarRating = ({ rating, setRating }) => {
+    return (
+      <View style={styles.container2}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <TouchableOpacity
+            key={star}
+            onPress={() => setRating(star)}
+            activeOpacity={0.7}
+          >
+            <MaterialIcons
+              name={star <= rating ? "star" : "star-border"}
+              size={32}
+              color={star <= rating ? "#ffd700" : "#ccc"}
+            />
+          </TouchableOpacity>
+        ))}
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewStyle}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <MaterialIcons name="arrow-back" size={30} color="#1E1F21" />
-          </TouchableOpacity>
-          <MaterialIcons name="favorite-border" size={30} color="#1E1F21" />
+        {/* Parte superior */}
+        <View style={styles.topContainer}>
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <MaterialIcons name="arrow-back" size={30} color="#1E1F21" />
+            </TouchableOpacity>
+            <MaterialIcons name="favorite-border" size={30} color="#1E1F21" />
+          </View>
+
+          <Image
+            source={require("../../assets/product-detail.png")}
+            style={styles.productImage}
+          />
         </View>
 
-        {/* Product Image */}
-        <Image
-          source={require("../../assets/product-detail.png")}
-          style={styles.productImage}
-        />
-        {/* Product Info */}
-        <View style={styles.productInfo}>
-          <Text style={styles.productBrand}>Nike Dunk</Text>
-          <Text style={styles.productName}>{dataProducto.nombre_producto}</Text>
-          <Text style={styles.productPrice}>
-            ${dataProducto.precio_producto}
-          </Text>
-          <View style={styles.rating}>
-            <MaterialIcons name="star" size={20} color="#FFBE00" />
-            <MaterialIcons name="star" size={20} color="#FFBE00" />
-            <MaterialIcons name="star" size={20} color="#FFBE00" />
-            <MaterialIcons name="star" size={20} color="#FFBE00" />
-            <MaterialIcons name="star-border" size={20} color="#FFBE00" />
-          </View>
+        {/* Parte inferior */}
+        <View style={styles.bottomContainer}>
+          <View style={styles.productInfo}>
+            <Text style={styles.productBrand}>Nike Dunk</Text>
+            <Text style={styles.productName}>
+              {dataProducto.nombre_producto}
+            </Text>
+            <Text style={styles.productPrice}>
+              ${dataProducto.precio_producto}
+            </Text>
 
-          {/* Size Selector */}
-          <Text style={styles.sizeTitle}>Talla</Text>
-          <ScrollView horizontal contentContainerStyle={styles.sizeSelector}>
-            {dataTallas.map((talla) => (
-              <TouchableOpacity
-                key={talla.id_talla}
-                style={[
-                  styles.sizeButton,
-                  selectedSize === talla.tamano_talla && styles.selectedSize,
-                  
-                ]}
-                onPress={() => {
-                  setSelectedSize(talla.tamano_talla);
-                  setSelectedSizeId(talla.id_talla);
-                }}
-              >
-                <Text
+            {/* Calificación del producto */}
+            <StarRating rating={rating} setRating={setRating} />
+            <Text style={styles.text1}>Tu calificación: {rating} estrellas</Text>
+
+            {/* Selector de talla */}
+            <Text style={styles.sizeTitle}>Talla</Text>
+            <ScrollView horizontal contentContainerStyle={styles.sizeSelector}>
+              {dataTallas.map((talla) => (
+                <TouchableOpacity
+                  key={talla.id_talla}
                   style={[
-                    styles.sizeButtonText,
+                    styles.sizeButton,
                     selectedSize === talla.tamano_talla &&
-                      styles.selectedSizeText,
+                      styles.selectedSize,
                   ]}
+                  onPress={() => {
+                    setSelectedSize(talla.tamano_talla);
+                    setSelectedSizeId(talla.id_talla);
+                  }}
                 >
-                   {talla.tamano_talla}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+                  <Text
+                    style={[
+                      styles.sizeButtonText,
+                      selectedSize === talla.tamano_talla &&
+                        styles.selectedSizeText,
+                    ]}
+                  >
+                    {talla.tamano_talla}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
 
-          {/* Color Selector */}
-          <Text style={styles.colorTitle}>Color</Text>
-          <View style={styles.colorSelector}>
-            {dataColores.map((color) => (
-              <TouchableOpacity
-                key={color.id_color}
-                style={[
-                  styles.colorButton,
-                  selectedColor === color.color_zapato &&
-                    styles.selectedColor(color.color_zapato),
-                 
-                ]}
-                onPress={() => {
-                  setSelectedColor(color.color_zapato);
-                  setSelectedColorId(color.id_color);
-                }}
-              >
-                <View
+            {/* Selector de color */}
+            <Text style={styles.colorTitle}>Color</Text>
+            <View style={styles.colorSelector}>
+              {dataColores.map((color) => (
+                <TouchableOpacity
+                  key={color.id_color}
                   style={[
-                    styles.colorCircle,
-                    { backgroundColor: color.color_zapato },
+                    styles.colorButton,
+                    selectedColor === color.color_zapato &&
+                      styles.selectedColor(color.color_zapato),
                   ]}
-                />
-              </TouchableOpacity>
-            ))}
-          </View>
+                  onPress={() => {
+                    setSelectedColor(color.color_zapato);
+                    setSelectedColorId(color.id_color);
+                  }}
+                >
+                  <View
+                    style={[
+                      styles.colorCircle,
+                      { backgroundColor: color.color_zapato },
+                    ]}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
 
-          {/* Quantity Selector */}
-          <Text style={styles.quantityTitle}>Cantidad</Text>
-          <TextInput
-            style={styles.quantityInput}
-            keyboardType="numeric"
-            value={quantity}
-            onChangeText={handleQuantityChange}
-          />
-          {/* Buy Button */}
-          <TouchableOpacity style={styles.buyButton} onPress={handleCreateDetail}>
-            <Text style={styles.buyButtonText}>comprar</Text>
-          </TouchableOpacity>
+            {/* Selector de cantidad */}
+            <Text style={styles.quantityTitle}>Cantidad</Text>
+            <TextInput
+              style={styles.quantityInput}
+              keyboardType="numeric"
+              value={quantity}
+              onChangeText={handleQuantityChange}
+            />
+
+            {/* Botón de compra */}
+            <TouchableOpacity
+              style={styles.buyButton}
+              onPress={handleCreateDetail}
+            >
+              <Text style={styles.buyButtonText}>Comprar</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -254,124 +272,140 @@ export default function DetalleProducto({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1E1F21",
   },
   scrollViewStyle: {
-    alignItems: "center",
+    flexGrow: 1,
+  },
+  topContainer: {
+    backgroundColor: "#ffd21b", // Color de fondo para la parte superior
+    paddingBottom: 20, // Espacio bajo la imagen
+  },
+  bottomContainer: {
+    backgroundColor: "#1a1a1b", // Color de fondo para la parte inferior
+    padding: 16,
+    borderTopLeftRadius: 30, // Bordes redondeados en la transición
+    borderTopRightRadius: 30,
+    marginTop: -30, // Ajuste para conectar sin solaparse
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "90%",
-    marginTop: 20,
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   productImage: {
-    width: "90%",
+    width: "100%",
     height: 300,
     resizeMode: "contain",
-    marginTop: 20,
   },
   productInfo: {
-    width: "90%",
-    backgroundColor: "#ffffff",
-    borderRadius: 10,
-    padding: 20,
-    marginTop: 20,
+    padding: 16,
+    backgroundColor: "#1a1a1b", // Color de fondo de la parte inferior
   },
   productBrand: {
     fontSize: 18,
-    color: "#ACACAD",
-    marginBottom: 5,
+    fontWeight: "bold",
+    marginBottom: 8,
+    color: 'white',
+    
   },
   productName: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "bold",
-    color: "#1E1F21",
+    marginBottom: 8,
+    color: 'white',
   },
   productPrice: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#FFBE00",
-    marginVertical: 10,
+    marginBottom: 16,
+    color: "white",
   },
-  quantityTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  quantityInput: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 10,
-    borderRadius: 5,
-    fontSize: 16,
-  },
-  rating: {
+  container2: {
     flexDirection: "row",
-    marginBottom: 20,
+    justifyContent: "center",
+    marginBottom: 8,
+  },
+  text1: {
+    fontSize: 16,
+    textAlign: "center",
+    color: 'white',
+    marginBottom: 16,
   },
   sizeTitle: {
     fontSize: 18,
+    color: 'white',
     fontWeight: "bold",
-    color: "#1E1F21",
-    marginBottom: 10,
+    marginBottom: 8,
   },
   sizeSelector: {
     flexDirection: "row",
-    marginBottom: 20,
+    marginBottom: 16,
   },
   sizeButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#ACACAD",
-    marginRight: 10,
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: "#f0f0f0",
+    marginRight: 8,
   },
   selectedSize: {
-    backgroundColor: "#FFBE00",
-    borderColor: "#FFBE00",
+    backgroundColor: "#1E1F21",
   },
   sizeButtonText: {
-    color: "#1E1F21",
+    fontSize: 16,
+    color: "#333",
   },
   selectedSizeText: {
-    color: "#ffffff",
+    color: "#fff",
   },
   colorTitle: {
     fontSize: 18,
+    color: 'white',
     fontWeight: "bold",
-    color: "#1E1F21",
-    marginBottom: 10,
+    marginBottom: 8,
   },
   colorSelector: {
     flexDirection: "row",
-    marginBottom: 20,
+    marginBottom: 16,
   },
   colorButton: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: "#ACACAD",
-    marginRight: 10,
+    marginRight: 8,
+  },
+  colorCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
   },
   selectedColor: (color) => ({
-    backgroundColor: color,
     borderColor: color,
+    borderWidth: 2,
   }),
+  quantityTitle: {
+    fontSize: 18,
+    color: 'white',
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  quantityInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 10,
+    color: 'white',
+    fontSize: 16,
+    marginBottom: 16,
+  },
   buyButton: {
-    backgroundColor: "#FFBE00",
-    borderRadius: 5,
-    paddingVertical: 10,
+    backgroundColor: "#ffd21b",
+    paddingVertical: 12,
+    borderRadius: 8,
     alignItems: "center",
-    marginTop: 20,
   },
   buyButtonText: {
-    color: "#1E1F21",
-    fontWeight: "bold",
+    color: "#fff",
     fontSize: 18,
+    
+    fontWeight: "bold",
   },
 });

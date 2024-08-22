@@ -7,7 +7,7 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as Constantes from "../utils/constantes";
@@ -72,68 +72,26 @@ export default function SignUp({ navigation }) {
     showMode("date");
   };
 
-  // Función para manejar la creación de la cuenta
-  const handleCreate = async () => {
+  const fillData = async () => {
     try {
-      // Calcular la fecha mínima permitida (18 años atrás desde la fecha actual)
-      const fechaMinima = new Date();
-      fechaMinima.setFullYear(fechaMinima.getFullYear() - 18);
-
-      // Validar los campos
-      if (
-        !nombre.trim() ||
-        !apellido.trim() ||
-        !direccion.trim() ||
-        !fechaNacimiento.trim() ||
-        !telefono.trim() ||
-        !clave.trim()
-      ) {
-        Alert.alert("Debes llenar todos los campos");
-        return;
-      } else if (!duiRegex.test(dui)) {
-        Alert.alert("El DUI debe tener el formato correcto (########-#)");
-        return;
-      } else if (edad < 18) {
-        Alert.alert("Error", "Debes tener al menos 18 años para registrarte.");
-        return;
-      } else if (isNaN(edad)) {
-        Alert.alert("Error", "La edad debe ser un número válido.");
-        return;
-      } else if (!telefonoRegex.test(telefono)) {
-        Alert.alert("El teléfono debe tener el formato correcto (####-####)");
-        return;
-      } else if (date > fechaMinima) {
-        Alert.alert("Error", "Debes tener al menos 18 años para registrarte.");
-        return;
-      }
-      
-
-      // Si todos los campos son válidos, proceder con la creación del usuario
-      const formData = new FormData();
-      formData.append("nombreCliente", nombre);
-      formData.append("apellidoCliente", apellido);
-      formData.append("telefonoCliente", telefono);
-      formData.append("direccionCliente", direccion);
-      formData.append("claveCliente", clave);
-
-
-      const response = await fetch(
-        `${ip}/HERMESPEED/api/servicios/publico/cliente.php?action=signUpMovil`,
-        {
-          method: "POST",
-          body: formData,
+        const response = await fetch(`${ip}/coffeeshop/api/services/public/cliente.php?action=editProfile`, {
+            method: 'GET'
+        });
+        const data = await response.json();
+        console.log("Data en actualizar consultada", data);
+        if (data.status) {
+            console.log(data.name, 'Valor de editar perfil')
+            setNombre(data.name.nombreCliente);
+            setApellido(data.name.apellidoCliente);
+            setEmail(data.name.correoCliente);
+            setDireccion(data.name.direccionCliente);
+            setTelefono(data.name.telefonoCliente);
+            setClave(data.name.claveCliente);
+        } else {
+            Alert.alert('Error', data.error);
         }
-      );
-
-      const data = await response.json();
-      if (data.status) {
-        Alert.alert("Datos Guardados correctamente");
-        navigation.navigate("Sesion");
-      } else {
-        Alert.alert("Error", data.error);
-      }
     } catch (error) {
-      Alert.alert("Ocurrió un error al intentar crear el usuario");
+        Alert.alert('Ocurrió un error al intentar obtener los datos del usuario');
     }
   };
 
@@ -141,6 +99,80 @@ export default function SignUp({ navigation }) {
   const handleLogout = async () => {
     navigation.navigate("Sesion");
   };
+
+  // Si todos los campos son válidos, proceder con la creación del usuario
+  const formData = new FormData();
+  formData.append('nombreCliente', nombre);
+  formData.append('apellidoCliente', apellido);
+  // formData.append('correoCliente', email);
+  formData.append('direccionCliente', direccion);
+  // formData.append('telefonoCliente', telefono);
+  
+  const editProfile = async () => {
+    try {
+        console.log("Datos a enviar", nombre, apellido, direccion, clave, telefono)
+
+        // Si todos los campos son válidos, proceder con la creación del usuario
+        const formData = new FormData();
+        formData.append('nombreCliente', nombre);
+        formData.append('apellidoCliente', apellido);
+        // formData.append('correoCliente', email);
+        formData.append('direccionCliente', direccion);
+        formData.append('telefonoCliente', telefono);
+        formData.append('claveCliente', clave);
+        const response = await fetch(`${ip}/HERMESPEED/api/servicios/publico/cliente.php?action=editProfile`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        console.log(data, "Data desde Editar Perfil OK")
+        if (data.status) {
+            console.log(data, 'Valor de editar perfil OK')
+            Alert.alert('Perfil editado correctamente', '', [
+                { text: 'OK', onPress: () => fillData() },
+            ], { icon: 'success' });
+        } else {
+            Alert.alert('Error', data.error);
+        }
+    } catch (error) {
+        Alert.alert('Ocurrió un aqui error al intentar crear el usuario');
+    }
+  };
+//DESDE AQUI
+  const handleUpdateDetalleCarrito = async () => {
+    try {
+     
+
+      const formData = new FormData();
+      formData.append('nombreCliente', nombre);
+      formData.append('apellidoCliente', apellido);
+      formData.append('direccionCliente', direccion);
+      formData.append('claveCliente', clave);
+      formData.append('idDetalle', idDetalle);
+
+      const response = await fetch(`${ip}/HERMESPEED/api/servicios/publico/cliente.php?action=editProfile`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+      if (data.status) {
+        Alert.alert('Se actualizo el perfil');
+        getDetalleCarrito();
+      } else {
+        Alert.alert('Error al editar el perfil', data.error);
+      }
+      setModalVisible(false);
+    } catch (error) {
+      Alert.alert("Error en editar perfil", error);
+      setModalVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    editProfile();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -172,7 +204,7 @@ export default function SignUp({ navigation }) {
           valor={direccion}
           setTextChange={setDireccion}
         />
-        <Buttons textoBoton="guardar" accionBoton={handleCreate} />
+        <Buttons textoBoton="guardar" accionBoton={editProfile} />
       </ScrollView>
     </View>
   );

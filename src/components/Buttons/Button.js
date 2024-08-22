@@ -16,11 +16,12 @@ const styles = StyleSheet.create({
 
     button: {
         marginTop: 50,
-        width: '80%',
+        width: '85%',
         borderRadius: 4,
         backgroundColor: "#FFBE00",
         padding: Platform.OS === 'ios' ? 15 : 10,
-        marginVertical: 5
+        marginVertical: 5,
+        alignSelf: 'center',
     },
     buttonText: {
         textAlign: 'center',

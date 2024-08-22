@@ -11,10 +11,16 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import Buttons from "../components/Buttons/Button";
 import * as Constantes from "../utils/constantes";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import Carousel from 'react-native-reanimated-carousel';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
+import Carousel from "react-native-reanimated-carousel";
 import { useFocusEffect } from "@react-navigation/native";
 import CardCarrusel from "../components/Carousel/CardCarrusel";
+import CardComponent from "../components/Productos/ProductList";
+import ProductList from "../components/Productos/ProductList";
 
 export default function Home({ navigation }) {
   const [correo, setCorreo] = useState(null);
@@ -78,12 +84,16 @@ export default function Home({ navigation }) {
         </View>
         {/* Banner */}
         <View style={styles.banner}>
-          <CardCarrusel/>
+          <CardCarrusel />
         </View>
         {/* Navigation Tabs */}
         <View style={styles.categoriesHeader}>
           <Text style={styles.TittleCategoria}>Categorias</Text>
-          <TouchableOpacity onPress={() => {/* handle see all action */}}>
+          <TouchableOpacity
+            onPress={() => {
+              /* handle see all action */
+            }}
+          >
             <Text style={styles.seeAllText}>Ver todo</Text>
           </TouchableOpacity>
         </View>
@@ -93,11 +103,17 @@ export default function Home({ navigation }) {
             {["All", "Nike", "Adidas", "Puma"].map((category) => (
               <TouchableOpacity
                 key={category}
-                style={selectedCategory === category ? styles.activeTab : styles.tab}
+                style={
+                  selectedCategory === category ? styles.activeTab : styles.tab
+                }
                 onPress={() => setSelectedCategory(category)}
               >
                 <Text
-                  style={selectedCategory === category ? styles.activeTabText : styles.tabText}
+                  style={
+                    selectedCategory === category
+                      ? styles.activeTabText
+                      : styles.tabText
+                  }
                 >
                   {category}
                 </Text>
@@ -105,37 +121,8 @@ export default function Home({ navigation }) {
             ))}
           </ScrollView>
         </View>
-
-        {/* Products Grid */}
-        <View style={styles.productsGrid}>
-          <View style={styles.productCard}>
-            <Image
-              source={require("../../assets/product1.png")}
-              style={styles.productImage}
-            />
-            <Text style={styles.productName}>Puma max 97</Text>
-          </View>
-          <View style={styles.productCard}>
-            <Image
-              source={require("../../assets/product1.png")}
-              style={styles.productImage}
-            />
-            <Text style={styles.productName}>Gazelle Bold Shoes</Text>
-          </View>
-          <View style={styles.productCard}>
-            <Image
-              source={require("../../assets/product1.png")}
-              style={styles.productImage}
-            />
-            <Text style={styles.productName}>Samba OG Shoes</Text>
-          </View>
-          <View style={styles.productCard}>
-            <Image
-              source={require("../../assets/product1.png")}
-              style={styles.productImage}
-            />
-            <Text style={styles.productName}>Air Black Shoes</Text>
-          </View>
+        <View style={{ flex: 1 }}>
+          <ProductList />
         </View>
       </ScrollView>
     </View>
@@ -171,14 +158,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    
+
     marginVertical: 15,
     width: "92%",
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   sizeSelector: {
     flexDirection: "row",
-    
+
     marginBottom: 10,
   },
   greeting: {
@@ -202,7 +189,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: 15,
     width: "92%",
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   userName: {
     color: "#ffffff",
@@ -236,7 +223,7 @@ const styles = StyleSheet.create({
   tab: {
     paddingVertical: 7,
     paddingHorizontal: 15,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     borderRadius: 5,
     marginHorizontal: 7,
   },
@@ -253,7 +240,7 @@ const styles = StyleSheet.create({
   activeTab: {
     paddingVertical: 7,
     paddingHorizontal: 15,
-    backgroundColor: '#FFBE00',
+    backgroundColor: "#FFBE00",
     borderRadius: 5,
     marginHorizontal: 7,
   },

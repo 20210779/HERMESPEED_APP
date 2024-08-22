@@ -1,143 +1,117 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, Alert, TextInput } from 'react-native';
-import Input from '../components/Inputs/Input';
-import InputEmail from '../components/Inputs/InputEmail';
-import Buttons from '../components/Buttons/Button';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import * as Constantes from '../utils/constantes';
-import { useFocusEffect } from '@react-navigation/native';
+import { StatusBar } from "expo-status-bar";
+import React, { useEffect, useState, useCallback } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Alert,
+  TextInput,
+} from "react-native";
+import Input from "../components/Inputs/Input";
+import InputEmail from "../components/Inputs/InputEmail";
+import Buttons from "../components/Buttons/Button";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Icon from "react-native-vector-icons/FontAwesome";
+import * as Constantes from "../utils/constantes";
+import fetchData from "../utils/fetchData";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Sesion({ navigation }) {
   const ip = Constantes.IP;
 
   const [isContra, setIsContra] = useState(true);
-  const [usuario, setUsuario] = useState('');
-  const [contrasenia, setContrasenia] = useState('');
+  const [usuario, setUsuario] = useState("");
+  const [contrasenia, setContrasenia] = useState("");
 
-  useFocusEffect(
-    React.useCallback(() => {
-      validarSesion(); 
-    }, [])
-  );
+  // URL de la API para el usuario
+  const USER_API = "servicios/publico/cliente.php";
 
-  const validarSesion = async () => {
+  // Función que ayuda a verificar si existe previamente una sesión abierta
+  const verifyLogged = async () => {
     try {
-      const response = await fetch(`${ip}/HERMESPEED/api/servicios/publico/cliente.php?action=getUser`, {
-        method: 'GET'
-      });
-
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        const text = await response.text();
-        throw new Error(`Expected JSON, but received: ${text}`);
-      }
-
-      const data = await response.json();
-
-      if (data.status === 1) {
-        navigation.navigate('TabNavigator');
-        console.log("Se ingresa con la sesión activa");
-      } else {
-        console.log("No hay sesión activa");
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'Ocurrió un error al validar la sesión');
-    }
-  };
-
-  const cerrarSesion = async () => {
-    try {
-      const response = await fetch(`${ip}/HERMESPEED/api/servicios/publico/cliente.php?action=logOut`, {
-        method: 'GET'
-      });
-
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        const text = await response.text();
-        throw new Error(`Expected JSON, but received: ${text}`);
-      }
-
-      const data = await response.json();
-
-      if (data.status) {
-        console.log("Sesión Finalizada");
-      } else {
-        console.log('No se pudo eliminar la sesión');
-      }
-    } catch (error) {
-      console.error(error, "Error desde Catch");
-      Alert.alert('Error', 'Ocurrió un error al cerrar sesión');
-    }
-  };
-
-  const handlerLogin = async () => {
-    if (!usuario || !contrasenia) {
-      Alert.alert('Error', 'Por favor ingrese su correo y contraseña');
-      return;
-    }
-
-    try {
-      const formData = new FormData();
-      formData.append('correo', usuario);
-      formData.append('clave', contrasenia);
-
-      const response = await fetch(`${ip}/HERMESPEED/api/servicios/publico/cliente.php?action=logIn`, {
-        method: 'POST',
-        body: formData
-      });
-
-      const data = await response.json();
-
-      if (data.status) {
-        setContrasenia('');
-        setUsuario('');
-        navigation.navigate('TabNavigator');
+      const data = await fetchData(USER_API, "getUser");
+      if (data.session) {
+        console.log(data);
+        navigation.navigate("TabNavigator");
       } else {
         console.log(data);
-        Alert.alert('Error sesión', data.error);
       }
     } catch (error) {
-      console.error(error, "Error desde Catch");
-      Alert.alert('Error', 'Ocurrió un error al iniciar sesión');
+      console.log(error);
+    }
+  };
+
+  //Función para el manejo del inicio de sesión
+  const handleLogin = async () => {
+    if (usuario === "" || contrasenia === "") {
+      Alert.alert("Error", "Por favor, complete todos los campos");
+    } else {
+      try {
+        // Creación del formulario para la petición
+        const formData = new FormData();
+        formData.append("correo", usuario);
+        formData.append("clave", contrasenia);
+        // Petición para iniciar sesión.
+        const responseData = await fetchData(USER_API, "logIn", formData);
+
+        if (responseData.status) {
+          Alert.alert(responseData.message);
+          setTimeout(() => {
+            navigation.navigate("TabNavigator");
+            verifyLogged();
+          }, 1500);
+        } else {
+          Alert.alert("Error", responseData.error);
+          console.log(responseData.error);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
   const irRegistrar = async () => {
-    navigation.navigate('SignUp');
+    navigation.navigate("SignUp");
   };
   const irHome = async () => {
-    navigation.navigate('Home');
+    navigation.navigate("Profile");
   };
 
-  useEffect(() => { validarSesion(); }, []);
+  const irEmail = async () => {
+    navigation.navigate("REmail");
+  };
+
+  useEffect(() => {
+    verifyLogged();
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../img/snacker_shoe.png')}
-        style={styles.image}
-      />
+      <Image source={require("../img/snacker_shoe.png")} style={styles.image} />
       <Text style={styles.titulo}>Bienvenido</Text>
       <Text style={styles.subtitulo}>Ingresa tus datos</Text>
       <View style={styles.inputEmail}>
-      <MaterialCommunityIcons name="email-outline" size={35} color="#ACACAD" style={styles.icon} />
+        <MaterialCommunityIcons
+          name="email-outline"
+          size={35}
+          color="#ACACAD"
+          style={styles.icon}
+        />
         <TextInput
-          placeholder='correo electrónico'
+          placeholder="correo electrónico"
           placeholderTextColor="#ACACAD"
           style={styles.textinput}
           value={usuario}
-          keyboardType='email-address'
+          keyboardType="email-address"
           onChangeText={setUsuario}
         />
       </View>
       <View style={styles.inputPassword}>
         <Icon name="lock" size={35} color="#ACACAD" style={styles.icon} />
         <TextInput
-          placeholder='contraseña'
+          placeholder="contraseña"
           placeholderTextColor="#ACACAD"
           style={styles.textinput}
           value={contrasenia}
@@ -145,42 +119,55 @@ export default function Sesion({ navigation }) {
           secureTextEntry={isContra}
         />
       </View>
-      <Buttons
-        textoBoton='Iniciar Sesión'
-        accionBoton={handlerLogin} />
-      <TouchableOpacity onPress={irRegistrar}><Text style={styles.textRegistrar}>¿No tienes cuenta?
-      <Text style={styles.textRegistrarA}> Crea una nueva cuenta</Text>
-      </Text>
+      <TouchableOpacity onPress={irEmail} style={styles.textContainer}>
+  <Text style={styles.textEmail}>Restablecer contraseña</Text>
+</TouchableOpacity>
+
+      <Buttons textoBoton="Iniciar Sesión" accionBoton={handleLogin} />
+      <TouchableOpacity onPress={irRegistrar}>
+        <Text style={styles.textRegistrar}>
+          ¿No tienes cuenta?
+          <Text style={styles.textRegistrarA}> Crea una nueva cuenta</Text>
+        </Text>
       </TouchableOpacity>
     </View>
-    
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1E1F21',
-    alignItems: 'center',
+    backgroundColor: "#1E1F21",
+    alignItems: "center",
   },
   titulo: {
-    color: '#ffffff',
-    fontWeight: 'bold',
+    color: "#ffffff",
+    fontWeight: "bold",
     fontSize: 35,
   },
   subtitulo: {
-    color: '#FFBE00',
+    color: "#FFBE00",
     fontSize: 20,
     marginBottom: 40,
   },
   textRegistrar: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 17,
     marginTop: 10,
   },
   textRegistrarA: {
-    color: '#FFBE00',
+    color: "#FFBE00",
     fontSize: 17,
+    marginTop: 10,
+  },
+  textContainer: {
+    width: "80%", // Para que el contenedor abarque el 80% del ancho de la pantalla
+    alignItems: 'flex-start', // Alinear el contenido del contenedor a la izquierda
+  },
+  textEmail: {
+    color: "#ADACAC",
+    fontSize: 13,
+    fontWeight: '600',
     marginTop: 10,
   },
   image: {
@@ -190,23 +177,23 @@ const styles = StyleSheet.create({
     marginTop: 70,
   },
   inputEmail: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1.5,
-    borderColor: '#FFBE00',
+    borderColor: "#FFBE00",
     padding: 5,
-    width: '80%',
+    width: "80%",
     marginTop: 45,
     paddingStart: 5,
     borderRadius: 4,
   },
   inputPassword: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1.5,
-    borderColor: '#FFBE00',
+    borderColor: "#FFBE00",
     padding: 5,
-    width: '80%',
+    width: "80%",
     marginTop: 45,
     paddingStart: 11,
     borderRadius: 4,
@@ -216,9 +203,8 @@ const styles = StyleSheet.create({
   },
   textinput: {
     flex: 1,
-    justifyContent: 'center',
-    color: '#ffffff',
-    fontWeight: 'bold', 
+    justifyContent: "center",
+    color: "#ffffff",
+    fontWeight: "bold",
   },
-  
 });

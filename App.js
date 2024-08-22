@@ -3,12 +3,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'; // 
 
 import Sesion from './src/screens/Sesion.js'; // Importa la pantalla de Sesión
 import SignUp from './src/screens/SignUp.js'; // Importa la pantalla de Registro
-
+import RevisarEmail from './src/screens/RevisarEmail.js'
 import TabNavigator from './src/tabNavigator/tabNavigator.js'; // Importa el navegador de pestañas
 import Home from './src/screens/Home.js';
 import CarruselScreen from './src/screens/CarruselScreen.js';
 import DetalleProducto from './src/screens/DetalleProducto.js';
 import EditPersonalInfo from './src/screens/editrProfile.js';
+import Profile from './src/screens/Profile.js';
 
 export default function App() {
 
@@ -25,9 +26,11 @@ export default function App() {
         <Stack.Screen name="SignUp" component={SignUp} /> 
         <Stack.Screen name="TabNavigator" component={TabNavigator} /> 
         <Stack.Screen name="Home" component={Home} /> 
+        <Stack.Screen name="REmail" component={RevisarEmail} /> 
         <Stack.Screen name="CarruselScreen" component={CarruselScreen} /> 
         <Stack.Screen name="DetalleProducto" component={DetalleProducto} /> 
         <Stack.Screen name="editProfile" component={EditPersonalInfo}/>
+        <Stack.Screen name="Profile" component={Profile}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
