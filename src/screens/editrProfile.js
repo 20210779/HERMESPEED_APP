@@ -1,18 +1,19 @@
 import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-  ScrollView,
+  StyleSheet, // Importa la función para crear estilos
+  Text, // Componente de texto
+  View, // Contenedor
+  TextInput, // Campo de entrada de texto
+  TouchableOpacity, // Botón que responde a toques
+  Alert, // Muestra alertas emergentes
+  ScrollView, // Contenedor que permite hacer scroll
 } from "react-native";
-import { useState, useEffect } from "react";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { MaterialIcons } from "@expo/vector-icons";
-import * as Constantes from "../utils/constantes";
-import Constants from "expo-constants";
-// Import de componentes
+import { useState, useEffect } from "react"; // Hooks de estado y efecto
+import DateTimePicker from "@react-native-community/datetimepicker"; // Selector de fecha y hora
+import { MaterialIcons } from "@expo/vector-icons"; // Iconos de Material Design
+import * as Constantes from "../utils/constantes"; // Importa constantes definidas en otra parte del proyecto
+import Constants from "expo-constants"; // Constantes específicas de Expo, como el alto de la barra de estado
+
+// Import de componentes personalizados para campos de entrada y botones
 import Input from "../components/Inputs/Input";
 import InputMultiline from "../components/Inputs/InputMultiline";
 import Buttons from "../components/Buttons/Button";
@@ -22,18 +23,22 @@ import MaskedInputDui from "../components/Inputs/MaskedInputDui";
 import InputEmail from "../components/Inputs/InputEmail";
 import InputEdad from "../components/Inputs/InputEdad";
 
+// Componente principal para la pantalla de registro (SignUp)
 export default function SignUp({ navigation }) {
-  const ip = Constantes.IP;
+  const ip = Constantes.IP; // Dirección IP desde las constantes
 
+  // Estados para manejar la fecha, su modo (solo fecha o hora), y si se muestra el selector
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
 
+  // Estados para almacenar los datos del formulario
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [direccion, setDireccion] = useState("");
   const [telefono, setTelefono] = useState("");
   const [clave, setClave] = useState("");
+
 
   // Expresiones regulares para validar DUI y teléfono
   const duiRegex = /^\d{8}-\d$/;
