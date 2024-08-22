@@ -7,9 +7,8 @@
     "icon": "./assets/HS_splash.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/HS_splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1E1F21"
+      "backgroundColor": "#000000"
     },
     "ios": {
       "supportsTablet": true
@@ -18,10 +17,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/coffee-cup-splash.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.franp64.HERMESPEED_APP"
     },
     "web": {
       "favicon": "./assets/coffee-cup.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "41443b22-b1d7-4ef9-864d-30d04b385396"
+      }
     }
   }
 }
