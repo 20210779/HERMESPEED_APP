@@ -28,4 +28,6 @@ dependencias
         "react-native-reanimated": "~3.10.1",
         "react-native-reanimated-carousel": "^3.5.1",
         "react-native-svg": "15.2.0",
-        "react-native-vector-icons": "^10.1.0"
+        "react-native-vector-icons": "^10.1.0",
+        "react-native-splash-screen": "^0.27.5",
+        "intl-pluralrules": "^2.0.1",
