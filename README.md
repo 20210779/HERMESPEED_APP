@@ -6,6 +6,7 @@
 .
 .
 .
+.
 dependencias
         "@expo/vector-icons": "^14.0.2",
         "@react-native-community/datetimepicker": "^8.1.1",
